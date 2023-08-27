@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="login.css" rel="stylesheet">
+</head>
+<body>
+    <div 
+    class="header">Persnol Blogging App
+        <div class="loghead">Signup</div>
+    </div>
+
+    <h1 class="head1">Login</h1>
+    <hr>
+
+   <div class="container">
+    <form class="form" >
+
+        <input class="eml" type="email" placeholder="Email" id="email" name="email" required>
+       
+        <br>
+
+        <input class="psw" type="password" placeholder="password" id="password" name="psw" required>
+        <br>
+        
+       
+
+        <div class="butn">
+            <a href="dashboard.html">
+            <button type="button" class="signupbtn"> Log In</button></a>
+        </div>
+        </form>
+   </div>
+
+   <script>
+    const signin = () => {
+  let email = document.getElementById('email').value
+  let password = document.getElementById('password').value
+  firebase.auth().signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+          let user = userCredential.user;
+          console.log(user)
+          const dbRef = firebase.database().ref();
+          dbRef.child("users").child(user.uid).get().then((snapshot) => {
+              if (snapshot.exists()) {
+                  const userData = snapshot.val()
+                  if (userData.role === 'Admin') {
+                      const user = { email: email };
+                      localStorage.setItem('user', JSON.stringify(user));
+                      console.log('User created successfully.')
+                      window.location.href = 'shop.html'
+                  }
+                  else {
+                      const user = { email: email };
+                      localStorage.setItem('user', JSON.stringify(user));
+                      window.location.href = '../Home/home.html'
+                  }
+              } else {
+                  console.log("No data available");
+              }
+          }).catch((error) => {
+              console.error(error);
+          });
+      })
+      .catch((error) => {
+          let errorCode = error.code;
+          let errorMessage = error.message;
+          console.log(errorCode + ': ' + errorMessage)
+      });
+
+}
+</script>
+
+<script src="configue.js"></script>
+
+
+
+
+
+    
+</body>
+</html>
